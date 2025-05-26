@@ -113,7 +113,7 @@ const forgetPassword = async (req, res) => {
         <h2>Anda telah meminta untuk mengatur ulang password.
             Klik link berikut untuk mengatur ulang password Anda:</h2>
         <h3>Link ini hanya berlaku selama 15 menit.</h3>
-        <a href="${resetLink}">KLIK DISINI</a>
+        <a href="${resetLink}">${resetLink}</a>
       `,
     };
 
