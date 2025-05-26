@@ -10,6 +10,7 @@ const {
 } = require("firebase/storage");
 const firebaseConfig = require("../config/firebase.config");
 const path = require("path");
+require("dotenv").config();
 
 const addPelanggan = async (req, res) => {
   const { first_name, last_name, email, password } = req.body;
@@ -102,7 +103,7 @@ const forgetPassword = async (req, res) => {
       expiresIn: "15m",
     });
 
-    const resetLink = `http://127.0.0.1:8000/resetPassword/${token}`;
+    const resetLink = `https://www.gymnation.my.id/resetPassword/${token}`;
 
     const mailOptions = {
       from: process.env.AUTH_EMAIL,
@@ -168,10 +169,9 @@ const updateProfile = async (req, res) => {
 
 const updateProfilePict = async (req, res) => {
   const { id_user } = req.params;
-  const  profile_pict  = req.file;
+  const profile_pict = req.file;
 
   try {
-
     // Cari data user
     const [userData] = await userModel.searchByID(id_user);
     const found = userData[0];
@@ -179,7 +179,7 @@ const updateProfilePict = async (req, res) => {
     if (!found) {
       return res.status(404).json({ message: "User tidak ditemukan." });
     }
-    
+
     const { img_path } = found;
 
     // Hapus gambar lama jika ada
@@ -214,14 +214,16 @@ const updateProfilePict = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: "Server error", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
   }
 };
 
 // Fungsi terpisah untuk mengunggah gambar baru
 const uploadNewProfilePicture = async (profilePictFile) => {
   if (!profilePictFile) {
-    throw new Error('File tidak valid');
+    throw new Error("File tidak valid");
   }
 
   const profilePictFileExtension = path.extname(profilePictFile.originalname);
@@ -232,7 +234,10 @@ const uploadNewProfilePicture = async (profilePictFile) => {
   const newProfilePictfileName = `${Date.now()}_${profilePictFileOriginalName}${profilePictFileExtension}`;
 
   const { firebaseStorage } = await firebaseConfig();
-  const storageRef = ref(firebaseStorage, `GymNation/user-img/${newProfilePictfileName}`);
+  const storageRef = ref(
+    firebaseStorage,
+    `GymNation/user-img/${newProfilePictfileName}`
+  );
 
   const profilePictBuffer = profilePictFile.buffer;
 
@@ -243,7 +248,6 @@ const uploadNewProfilePicture = async (profilePictFile) => {
   return await getDownloadURL(resultProfilePict.ref);
 };
 
-
 module.exports = {
   addPelanggan,
   addUser,
@@ -252,5 +256,5 @@ module.exports = {
   forgetPassword,
   deleteUser,
   updateProfile,
-  updateProfilePict
+  updateProfilePict,
 };
