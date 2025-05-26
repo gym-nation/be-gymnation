@@ -1,6 +1,7 @@
 const transporter = require("../config/mail.config");
 const userModel = require("../model/user");
 const jwt = require("jsonwebtoken");
+require("dotenv").config();
 const {
   getStorage,
   ref,
@@ -98,12 +99,11 @@ const forgetPassword = async (req, res) => {
         .status(404)
         .json({ success: false, message: "Email tidak ditemukan." });
     }
-
     const token = jwt.sign({ id: user.id_user }, process.env.JWT_SECRET, {
       expiresIn: "15m",
     });
 
-    const resetLink = `https://www.gymnation.my.id/resetPassword/${token}`;
+    const resetLink = `${process.env.WEB_URL}/resetPassword/${token}`;
 
     const mailOptions = {
       from: process.env.AUTH_EMAIL,
@@ -113,7 +113,7 @@ const forgetPassword = async (req, res) => {
         <h2>Anda telah meminta untuk mengatur ulang password.
             Klik link berikut untuk mengatur ulang password Anda:</h2>
         <h3>Link ini hanya berlaku selama 15 menit.</h3>
-        <a href="${resetLink}">${resetLink}</a>
+        <a href="${resetLink}">KLIK DISINI</a>
       `,
     };
 
